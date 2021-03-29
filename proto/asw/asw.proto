@@ -1,0 +1,20 @@
+syntax = "proto3";
+option go_package = "pb3/asw/AswSvr";
+package asw.AswSvr;
+import "google/api/annotations.proto";
+
+service FlowManager {
+  rpc CreateFlow (CreateFlowReq) returns (CreateFlowRsp) {
+    option(google.api.http) = {
+      post: "/CreateFlow"
+      body: "*"
+    };
+  }
+}
+
+message CreateFlowReq {
+  string machineQRN = 1;
+}
+message CreateFlowRsp {
+  bool flag = 1;
+}

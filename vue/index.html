@@ -24,26 +24,14 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
+                    <li class="active"><a href="#">首页</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li class="dropdown-header">Nav header</li>
-                            <li><a href="#">Separated link</a></li>
-                            <li><a href="#">One more separated link</a></li>
-                        </ul>
-                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="active"><a href="./">Default <span class="sr-only">(current)</span></a></li>
-                    <li><a href="../navbar-static-top/">Static top</a></li>
-                    <li><a href="../navbar-fixed-top/">Fixed top</a></li>
+                    <li><a href="../graph.html">图</a></li>
+                    <li><a href="../lyt">其它</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -51,32 +39,28 @@
 
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>Navbar example</h1>
-        <p>This example is a quick exercise to illustrate how the default, static navbar and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-        <p>
-            <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs &raquo;</a>
-        </p>
+
+        <div class="row placeholders">
+            <div id="app">
+                <div id="codearea" class="col-xs-10 col-sm-8 placeholder">
+                    <img src="./icon_nodearea.png" id="icon_nodearea" style="display: none"/>
+                    <span>[代码编辑框]</span>
+                    <textarea v-model="code" placeholder="write TCSL code in it." style="width: 800px; height: 400px"></textarea>
+                    <button v-on:click="btnSubmit">解析</button>
+                    DAGraph{{dataJson}}
+                    <br><br>
+                </div>
+                <div id="grapharea" class="col-xs-10 col-sm-8 placeholder">
+                    <button v-on:click="btnRefresh">DAGraph构造</button>
+
+                    <iframe id="graph" src="graph.html" height="1000" width="800"></iframe>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div> <!-- /container -->
 
-<div class="row placeholders">
-    <div id="app">
-        <div id="codearea" class="col-xs-15 col-sm-5 placeholder">
-            <img src="./icon_nodearea.png" id="icon_nodearea" style="display: none"/>
-            {{ message }}
-            <span>[代码编辑框]</span>
-            <textarea v-model="code" placeholder="write TCSL code in it." style="width: 800px; height: 400px"></textarea>
-            <button v-on:click="btnSubmit">解析</button>
-            DAGraph{{dataJson}}
-        </div>
-        <div id="grapharea" class="col-xs-15 col-sm-5 placeholder">
-            <button v-on:click="btnRefresh">DAGraph构造</button>
-
-            <iframe id="graph" src="graph.html" height="1000" width="800"></iframe>
-        </div>
-    </div>
-</div>
 
 
 <div id="executor">
@@ -88,7 +72,6 @@
     var app = new Vue({
         el: '#app',
         data: {
-            message: 'Welcome to index page.',
             code: '',
             dataJson: '',
             preUrl: '/v1/parser/parse?definition=',
@@ -148,6 +131,11 @@
         created: function () {
             this.init()
         },
+        methods: {
+            init: function () {
+                
+            }
+        }
 
     })
 </script>

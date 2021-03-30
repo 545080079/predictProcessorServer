@@ -49,13 +49,14 @@
 
                 <div id="inputarea" class="col-xs-6 col-sm-5 placeholder">
                     <span>输入(需在code页编写工作流再到此处执行该工作流)</span>
-                    <textarea v-model="input" placeholder=
-'{
-   “key1”: "value1",
-   "key2": "value2"
-}'
+                    <textarea v-model="input" placeholder="工作流初始输入"
                               style="width: 400px; height: 400px"></textarea>
                     <button v-on:click="btnSubmit">执行</button>
+                    测试数据
+                    {"k1": 12.5,
+                    "k2": 4.6,
+                    "k3": 3.2,
+                    "target": 3.2}
 
                     <br><br>
                 </div>

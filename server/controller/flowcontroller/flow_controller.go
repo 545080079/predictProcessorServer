@@ -32,8 +32,10 @@ func HandlerFlowProcess(c *gin.Context) {
 	dag := daoimpl.FindDAG(resourceQRN)
 	log.Println("dag: ", dag)
 
-	inputJSON := jsonutils.ParseStringToInputJSON(input)
-	flowutils.Process(dag, inputJSON)
+	userInputMap := jsonutils.ParseStringToInputMap(input)
+
+	//传入工作流入参，调用普通顺序执行器执行DAGraph flow
+	flowutils.ProcessNormal(dag, userInputMap)
 
 	//执行完，标记所有节点为绿色
 	viewutils.GenerateGraphByDAG(dag, "green")

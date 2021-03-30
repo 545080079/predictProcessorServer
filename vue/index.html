@@ -44,7 +44,18 @@
             <div id="app">
                 <div id="codearea" class="col-xs-10 col-sm-8 placeholder">
                     <img src="./icon_nodearea.png" id="icon_nodearea" style="display: none"/>
-                    <span>[代码编辑框]</span>
+                    <span>[代码编辑框]测试数据：{"StartAt": "n1","States":{
+"n1": {
+"name": "n1",
+"resource": "qrn:x:1",
+"next": "n2"
+},
+"n2":{
+"name": "n2",
+"resource": "qrn:x:2",
+"end": true
+}
+}}</span>
                     <textarea v-model="code" placeholder="write TCSL code in it." style="width: 800px; height: 400px"></textarea>
                     <button v-on:click="btnSubmit">解析</button>
                     {{dataJson}}

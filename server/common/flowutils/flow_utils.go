@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"predictProcessorServer/server/model"
-	"strconv"
 	"time"
 )
 
@@ -31,9 +30,14 @@ func CheckInputParams(c *gin.Context) bool {
 
 
 /*
-	执行DAG
+	DAG顺序执行器
  */
-func Process(dag *model.DAG, input *model.InputJSON) error {
+func ProcessNormal(dag *model.DAG, userInput model.InputMap) error {
+	//第1个节点， 入参由[用户]和[此节点的Parameters]提供
+	//2~End节点，入参由[上一个节点计算结果]和[此节点的Parameters]提供
+	lastInput := userInput
+
+	//顺序执行节点
 	p := dag.Next[0]
 	for p != nil {
 
@@ -41,19 +45,20 @@ func Process(dag *model.DAG, input *model.InputJSON) error {
 			continue
 		}
 
-		//TODO 临时写法，后期补参数解析
-		param1, _ := strconv.ParseInt(input.K1, 10, 64)
-		param2, _ := strconv.ParseInt(input.K2, 10, 64)
-		param3, _ := strconv.ParseInt(input.K3, 10, 64)
-		arr := []int64{
-			param1, param2, param3,
+		//[此节点的Parameters]参数追加到当前输入
+		for k, v := range p.Parameters {
+			//如果字段重名，目前默认新结果覆盖旧结果
+			lastInput[k] = v
 		}
-		resp := Call(p.Resource, arr, param3)
+
+		resp := Call(p.Resource, lastInput)
 		log.Printf("[Process] exec node name[%v]: return [%v], cost time [%v]", p.Name, resp.result, resp.costTime)
 
 		if p.Next == nil || p.Next[0] == nil {
 			break
 		}
+
+		lastInput[p.Name] = resp.result
 		p = p.Next[0]
 	}
 	return nil
@@ -68,7 +73,7 @@ type CallResp struct {
 	costTime time.Duration
 }
 
-func Call(resourceQRN string, arr []int64, target int64) *CallResp {
+func Call(resourceQRN string, input model.InputMap) *CallResp {
 	resp := &CallResp{
 		result:   -1,
 	}
@@ -90,9 +95,9 @@ func Call(resourceQRN string, arr []int64, target int64) *CallResp {
 
 	switch functionName {
 	case "sum":
-		return sum(arr)
+		return sum(input)
 	case "find":
-		return find(arr, target)
+		return find(input)
 	default:
 		return resp
 	}
@@ -103,24 +108,36 @@ func Call(resourceQRN string, arr []int64, target int64) *CallResp {
 /*
 	计算函数实现（模拟耗时操作）
  */
-func sum(arr []int64) *CallResp {
-	var res int64 = 0
+func sum(input model.InputMap) *CallResp {
+
+	arr := []float64{
+		input["k1"].(float64),
+		input["k2"].(float64),
+		input["k3"].(float64),
+	}
+	var res float64 = 0
 	startTime := time.Now()
 	for _, v := range arr {
 		time.Sleep(time.Millisecond * 100)
 		res += v
 	}
 	return &CallResp{
-		result:   res,
+		result:   int64(res),
 		costTime: time.Since(startTime),
 	}
 }
 
-func find(arr []int64, target int64) *CallResp {
+func find(input model.InputMap) *CallResp {
 	startTime := time.Now()
+	arr := []float64{
+		input["k1"].(float64),
+		input["k2"].(float64),
+		input["k3"].(float64),
+	}
+	target := input["target"].(float64)
 	for i, v := range arr {
 		time.Sleep(time.Millisecond * 100)
-		if v == target {
+		if int64(v) == int64(target) {
 			return &CallResp{
 				result:   int64(i),
 				costTime: time.Since(startTime),

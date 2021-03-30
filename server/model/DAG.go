@@ -47,12 +47,10 @@ type State struct {
 	End bool `json:"end"`
 }
 
-//TODO 暂时先限定三个入参
-type InputJSON struct {
-	K1 string `json:"k1"`
-	K2 string `json:"k2"`
-	K3 string `json:"k3"`
-}
+/*
+入参
+ */
+type InputMap map[string]interface{}
 
 /*
 	打印图

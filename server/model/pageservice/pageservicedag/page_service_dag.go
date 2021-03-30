@@ -45,7 +45,6 @@ func ParseDefinition(definition string) (*model.DAG, error) {
 
 	for _, v := range nameArray {
 		DAGNode := &model.DAG {
-			Next:        nil,
 			Name:		 v,
 			Resource: 	 dagJSON.States[v].Resource,
 			Type:        dagJSON.States[v].Type,
@@ -53,14 +52,14 @@ func ParseDefinition(definition string) (*model.DAG, error) {
 			IsEnd:       dagJSON.States[v].End,
 			Parameters:  dagJSON.States[v].Parameters,
 		}
-		//DAGNode.RLock()
-		//defer DAGNode.RUnlock()
-		log.Printf("%v", DAGNode)
-
 		next := make([]*model.DAG, 1)
 		next[0] = DAGNode
 		tail.Next = next
 		tail = DAGNode
+
+		log.Printf("%v", DAGNode)
+		//DAGNode.RLock()
+		//defer DAGNode.RUnlock()
 	}
 
 	dummyDAGNode.Print()

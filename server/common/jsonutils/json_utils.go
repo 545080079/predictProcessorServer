@@ -30,16 +30,20 @@ func ParseStringToJson(definition string) *model.DAGJson {
 	return res
 }
 
-func ParseStringToInputJSON(input string) *model.InputJSON {
-	var res *model.InputJSON
+func ParseStringToInputMap(input string) map[string]interface{} {
+	var res *model.InputMap
+	resMap := make(map[string]interface{}, 0)
 	log.Println("[ParseStringToInputJSON] input:", input)
 	if input == "" {
-		return res
+		return resMap
 	}
 	err := json.Unmarshal([]byte(input), &res)
 	if err != nil {
 		log.Fatal("[Unmarshal] ret error: ", err)
 	}
 
-	return res
+	for k, v := range *res {
+		resMap[k] = v
+	}
+	return resMap
 }

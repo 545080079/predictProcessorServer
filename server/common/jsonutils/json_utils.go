@@ -18,11 +18,25 @@ import (
  */
 func ParseStringToJson(definition string) *model.DAGJson {
 	var res *model.DAGJson
-	log.Println(definition)
+	log.Println("[ParseStringToJson] definition:", definition)
 	if definition == "" {
 		return res
 	}
 	err := json.Unmarshal([]byte(definition), &res)
+	if err != nil {
+		log.Fatal("[Unmarshal] ret error: ", err)
+	}
+
+	return res
+}
+
+func ParseStringToInputJSON(input string) *model.InputJSON {
+	var res *model.InputJSON
+	log.Println("[ParseStringToInputJSON] input:", input)
+	if input == "" {
+		return res
+	}
+	err := json.Unmarshal([]byte(input), &res)
 	if err != nil {
 		log.Fatal("[Unmarshal] ret error: ", err)
 	}

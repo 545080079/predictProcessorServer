@@ -13,5 +13,5 @@ import (
 )
 
 func HandlerTest(c *gin.Context) {
-	c.String(http.StatusOK, "Hello.")
+	c.String(http.StatusOK, "Hello!!")
 }

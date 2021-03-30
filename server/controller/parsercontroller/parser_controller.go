@@ -9,12 +9,14 @@ package parsercontroller
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
+	"predictProcessorServer/server/dao/daoimpl"
 	"predictProcessorServer/server/model/pageservice/pageservicedag"
 )
 
 /*
 	解析Definition JSON
-	Return DAG graph（由render service负责渲染显示）
+	Return DAG graph
  */
 func HandlerParseDefinition(c *gin.Context) {
 
@@ -26,6 +28,10 @@ func HandlerParseDefinition(c *gin.Context) {
 	}
 
 	dummyDAGNode, _ := pageservicedag.ParseDefinition(definition)
+
+	//存至数据层
+	key := daoimpl.Push(dummyDAGNode)
+	log.Println("push dag key=", key)
 
 	c.JSON(200, dummyDAGNode)
 }

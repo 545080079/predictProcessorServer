@@ -8,7 +8,6 @@
 package viewutils
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/components"
 	"github.com/go-echarts/go-echarts/v2/opts"
@@ -17,14 +16,24 @@ import (
 	"predictProcessorServer/server/model"
 )
 
-func GenerateGraphByLinkedList(dummy *model.DAG, w gin.ResponseWriter) {
+var graph *charts.Graph
 
-	graph := charts.NewGraph()
+func init() {
+	graph = charts.NewGraph()
+}
+
+/*
+	生成DAG渲染图的入口方法
+	[入参]
+		color：节点颜色
+ */
+func GenerateGraphByDAG(dummy *model.DAG, color string) {
+
 	graph.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
-		Title:         "linked list demo",
+		Title:         "DAG Render Demo",
 	}))
 
-	graph.AddSeries("graph", genNodes(dummy), genLinks(dummy),
+	graph.AddSeries("graph", genNodes(dummy, color), genLinks(dummy),
 		charts.WithGraphChartOpts(
 			opts.GraphChart{
 				Layout:             "none",
@@ -37,20 +46,19 @@ func GenerateGraphByLinkedList(dummy *model.DAG, w gin.ResponseWriter) {
 			Position:  "top",
 		}))
 
+	render()
+}
+
+func render() {
 	page := components.NewPage()
 	page.AddCharts(graph)
-	err := page.Render(w)
-	if err != nil {
-		log.Fatal("[GenerateGraphByLinkedList] page render response writer failed: ", err)
-	}
 	file, err := os.Create("./vue/graph.html")
 	err = page.Render(file)
 	if err != nil {
 		log.Fatal("[GenerateGraphByLinkedList] page render file failed: ", err)
 	}
 }
-
-func genNodes(dummy *model.DAG) []opts.GraphNode {
+func genNodes(dummy *model.DAG, color string) []opts.GraphNode {
 
 	nodes := make([]opts.GraphNode, 0)
 
@@ -65,6 +73,9 @@ func genNodes(dummy *model.DAG) []opts.GraphNode {
 			Fixed:      false,
 			Symbol:     "roundRect",
 			SymbolSize: 20,
+			ItemStyle:  &opts.ItemStyle{
+				Color:        color,
+			},
 		}
 		nodes = append(nodes, node)
 		offset += 50

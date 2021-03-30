@@ -36,7 +36,7 @@ func ParseDefinition(definition string) (*model.DAG, error) {
 	dummyDAGNode := &model.DAG {
 		Next:        nil,
 		Name:		 "开始",
-		ResourceQRN: "",
+		Resource: 	 "",
 		Type:        "dummy",
 		Comment:     "",
 		IsEnd:       false,
@@ -47,10 +47,11 @@ func ParseDefinition(definition string) (*model.DAG, error) {
 		DAGNode := &model.DAG {
 			Next:        nil,
 			Name:		 v,
-			ResourceQRN: dagJSON.States[v].Resource,
+			Resource: 	 dagJSON.States[v].Resource,
 			Type:        dagJSON.States[v].Type,
 			Comment:     dagJSON.States[v].Comment,
 			IsEnd:       dagJSON.States[v].End,
+			Parameters:  dagJSON.States[v].Parameters,
 		}
 		//DAGNode.RLock()
 		//defer DAGNode.RUnlock()

@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"predictProcessorServer/server/common/viewutils"
+	"predictProcessorServer/server/dao/daoimpl"
 	"predictProcessorServer/server/model/pageservice/pageservicedag"
 )
 
@@ -23,7 +24,10 @@ func HandlerGenerateGraph(c *gin.Context) {
 	}
 
 	dummyDAGNode, _ := pageservicedag.ParseDefinition(definition)
-	//渲染图到ResponseWriter
-	viewutils.GenerateGraphByLinkedList(dummyDAGNode, c.Writer)
+	//存至数据层
+	key := daoimpl.Push(dummyDAGNode)
+	log.Println("push dag key=", key)
+	//渲染图
+	viewutils.GenerateGraphByDAG(dummyDAGNode, "blue")
 	log.Println("Generate Graph success.")
 }

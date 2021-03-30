@@ -13,13 +13,14 @@ import (
 )
 
 /*
-	工作流Graph
+	解析后的工作流Graph Node链表
  */
 type DAG struct {
 	Next        []*DAG
 	Name		string
-	ResourceQRN string
 	Type        string
+	Resource	string
+	Parameters  map[string]string
 	Comment     string
 	IsEnd       bool
 	sync.RWMutex
@@ -41,8 +42,16 @@ type State struct {
 	Type string `json:"type"`
 	Comment string `json:"comment"`
 	Resource string `json:"resource"`
+	Parameters  map[string]string `json:"parameters"`
 	Next string `json:"next"`
 	End bool `json:"end"`
+}
+
+//TODO 暂时先限定三个入参
+type InputJSON struct {
+	K1 string `json:"k1"`
+	K2 string `json:"k2"`
+	K3 string `json:"k3"`
 }
 
 /*
@@ -56,7 +65,7 @@ func (d *DAG) Print() {
 	i := 0
 	for ptr != nil {
 
-		log.Printf("[%d]type:%v, comment:%v, resourceQRN:%v, isEnd:%v", i, ptr.Type, ptr.Comment, ptr.ResourceQRN, ptr.IsEnd)
+		log.Printf("[%d]type:%v, comment:%v, resourceQRN:%v, isEnd:%v", i, ptr.Type, ptr.Comment, ptr.Resource, ptr.IsEnd)
 
 		//访问节点的next
 		if len(ptr.Next) == 0 {

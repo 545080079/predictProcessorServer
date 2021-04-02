@@ -9,14 +9,15 @@ package pageservicedag
 
 import (
 	"log"
-	"predictProcessorServer/server/common/jsonutils"
+	"predictProcessorServer/conf"
+	"predictProcessorServer/server/common/parseutils"
 	"predictProcessorServer/server/common/stateutils"
 	"predictProcessorServer/server/model"
 )
 
 func ParseDefinition(definition string) (*model.DAG, error) {
 	log.Println("[test]", definition, "[end]")
-	dagJSON := jsonutils.ParseStringToJson(definition)
+	dagJSON := parseutils.ParseStringToJson(definition)
 
 	//读取状态机列表
 	nameArray := make([]string, 0)
@@ -35,7 +36,7 @@ func ParseDefinition(definition string) (*model.DAG, error) {
 	//图dummy节点
 	dummyDAGNode := &model.DAG {
 		Next:        nil,
-		Name:		 "开始",
+		Name:		 conf.DummyNodeName,
 		Resource: 	 "",
 		Type:        "dummy",
 		Comment:     "",

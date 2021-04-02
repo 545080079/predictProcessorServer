@@ -10,9 +10,10 @@ package viewcontroller
 import (
 	"github.com/gin-gonic/gin"
 	"log"
-	"predictProcessorServer/server/common/viewutils"
+	"predictProcessorServer/conf"
 	"predictProcessorServer/server/dao/daoimpl"
 	"predictProcessorServer/server/model/pageservice/pageservicedag"
+	"predictProcessorServer/server/model/pageservice/pageserviceview"
 )
 
 func HandlerGenerateGraph(c *gin.Context) {
@@ -28,6 +29,6 @@ func HandlerGenerateGraph(c *gin.Context) {
 	key := daoimpl.Push(dummyDAGNode)
 	log.Println("push dag key=", key)
 	//渲染图
-	viewutils.GenerateGraphByDAG(dummyDAGNode, "blue")
+	pageserviceview.GenerateGraphByDAG(dummyDAGNode, conf.CreateModeInit, float32(0.1), "red")
 	log.Println("Generate Graph success.")
 }

@@ -24,12 +24,12 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html">首页</a></li>
                     <li><a href="../index_processor.html">执行器</a></li>
-                    <li><a href="../index_processor_predict.html">预测执行器</a></li>
+                    <li class="active"><a href="../index_processor_predict.html">预测执行器</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="active"><a href="./">Code <span class="sr-only">(current)</span></a></li>
+                    <li><a href="./">Code <span class="sr-only">(current)</span></a></li>
                     <li><a href="../graph.html">DAGraph</a></li>
                     <li><a href="../lyt">其它</a></li>
                 </ul>
@@ -41,55 +41,50 @@
     <div class="jumbotron">
 
         <div class="row placeholders">
-            <div id="app">
-                <div id="codearea" class="col-xs-10 col-sm-8 placeholder">
-                    <img src="./icon_nodearea.png" id="icon_nodearea" style="display: none"/>
-                    <span>[代码编辑框]测试数据：{"StartAt": "n1","States":{
-"n1": {
-"name": "n1",
-"resource": "qrn:x:1",
-"next": "n2"
-},
-"n2":{
-"name": "n2",
-"resource": "qrn:x:3",
-"end": true
-}
-}}</span>
-                    <textarea v-model="code" placeholder="write TCSL code in it." style="width: 800px; height: 400px"></textarea>
-                    <button v-on:click="btnSubmit">解析</button>
-                    {{dataJson}}
+            <div id="processor">
+
+                <div id="grapharea" class="col-xs-6 col-sm-6 placeholder">
+                    <iframe id="graph" src="graph.html" height="1000" width="400"></iframe>
+                </div>
+
+                <div id="inputarea" class="col-xs-6 col-sm-5 placeholder">
+                    <span>输入(需在code页编写工作流再到此处执行该工作流)</span>
+                    <textarea v-model="input" placeholder="工作流初始输入"
+                              style="width: 400px; height: 400px"></textarea>
+                    <button v-on:click="btnSubmit">执行</button>
+                    测试数据
+                    {"k1": "12.5", "k2": "4.7", "k3": "3.2", "target": "3.2"}
+                    <br>执行结果：{{dataJson}}
                     <br><br>
                 </div>
-                <div id="grapharea" class="col-xs-10 col-sm-8 placeholder">
-                    <button v-on:click="btnRefresh">DAGraph构造</button>
-                    <iframe id="graph" src="graph.html" height="1000" width="800"></iframe>
-                </div>
+
+
             </div>
         </div>
     </div>
 
 </div> <!-- /container -->
 
+
 <script>
-    var app = new Vue({
-        el: '#app',
+    var timer = null
+    function clock()
+    {
+        document.getElementById('graph').contentWindow.location.reload(true);
+    }
+
+    var processor = new Vue({
+        el: '#processor',
         data: {
-            code: '',
+            input: '',
+            processUrl: '/v1/flow/ProcessParallel?qrn=qrn:1&input=',
+            submitUrl: '',
             dataJson: '',
-            preUrl: '/v1/parser/parse?definition=',
-            dataUrl: '',
-            graphUrl: '/v1/view/gen?definition=',
-            graphHtml: null,
         },
-        created: function() {
+        created: function () {
             this.init()
-            this.getData()
         },
         methods: {
-            init: function () {
-
-            },
             htmlFilter: function(text) {
                 return text.replace(/[{}]/g, function (match, pos, originalText) {
                     switch (match) {
@@ -98,34 +93,26 @@
                     }
                 });
             },
-            btnRefresh: function () {
+            init: function () {
+
+            },
+            btnSubmit: function () {
                 var that = this;
-                that.dataUrl = that.graphUrl + that.htmlFilter(that.code)
+                self.timer = self.setInterval("clock()", 2000)
+                that.submitUrl = that.processUrl + that.htmlFilter(that.input)
                 that.$http({
                     method: 'GET',
-                    url: this.dataUrl,
+                    url: this.submitUrl,
                 }).then(function(response){
                     document.getElementById('graph').contentWindow.location.reload(true);
-                },function (error) {
-                })
-            },
-            btnSubmit: function() {
-                this.getData()
-            },
-            getData: function () {
-                var that = this;
-                that.dataUrl = that.preUrl + that.htmlFilter(that.code)
-                that.$http({
-                    method: 'GET',
-                    url: this.dataUrl,
-                }).then(function(response){
+                    window.clearInterval(timer)
                     this.dataJson = response.data
                 },function (error) {
                 })
             }
         }
-    })
 
+    })
 </script>
 </body>
 </html>

@@ -48,9 +48,33 @@ type State struct {
 }
 
 /*
-入参
+状态机传递参数类型
+输入输出都是InputMap
  */
-type InputMap map[string]interface{}
+type InputMap map[string]string
+
+/*
+	获取Graph节点数量
+ */
+func (d *DAG) LenExceptDummy() int {
+
+	ptr := d
+	cnt := 0
+	for ptr != nil {
+
+		//访问节点的next
+		if len(ptr.Next) == 0 {
+			break
+		}
+		ptr = ptr.Next[0]
+		cnt++
+	}
+
+	//dummy节点不计入
+	return cnt - 1
+}
+
+
 
 /*
 	打印图

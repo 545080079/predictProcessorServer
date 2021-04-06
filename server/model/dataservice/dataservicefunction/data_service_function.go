@@ -41,6 +41,7 @@ func Call(resourceQRN string, input model.InputMap) *CallResp {
 
 	var functionName string
 
+	log.Printf("[Call] resourceQRN: [%v]", resourceQRN)
 	/*
 		此处qrn:x:{num}为函数的resourceQRN写法
 		States节点传入的Resource便对应该处
@@ -58,10 +59,13 @@ func Call(resourceQRN string, input model.InputMap) *CallResp {
 
 	switch functionName {
 	case "sum":
+		log.Printf("[Call] into sum.")
 		return sum(input)
 	case "find":
+		log.Printf("[Call] into find.")
 		return find(input)
 	case "pass":
+		log.Printf("[Call] into pass.")
 		return pass(input)
 	default:
 		return resp
@@ -82,15 +86,20 @@ func sum(input model.InputMap) *CallResp {
 		parseutils.StrToFloat64(input["k2"]),
 		parseutils.StrToFloat64(input["k3"]),
 	}
+	if input["lastNode-Result"] != "" {
+		arr = append(arr, parseutils.StrToFloat64(input["lastNode-Result"]))
+	}
 	var res float64 = 0
 	startTime := time.Now()
 	for _, v := range arr {
 		time.Sleep(time.Millisecond * 1000)
 		res += v
 	}
+
+	log.Printf("[sum] call sum result:[%v]", res)
 	return &CallResp{
 		Result:   BuildResult(map[string]string {
-			"Result": parseutils.Float64ToStr(res),
+			"lastNode-Result": parseutils.Float64ToStr(res),
 		}),
 		CostTime: time.Since(startTime).Seconds(),
 	}
@@ -108,9 +117,10 @@ func find(input model.InputMap) *CallResp {
 	for i, v := range arr {
 		time.Sleep(time.Millisecond * 100)
 		if int64(v) == int64(target) {
+			log.Printf("[find] call find result:index[%v]", i)
 			return &CallResp{
 				Result:   BuildResult(map[string]string {
-					"Result": strconv.FormatInt(int64(i), 10),
+					"lastNode-Result": strconv.FormatInt(int64(i), 10),
 				}),
 				CostTime: time.Since(startTime).Seconds(),
 			}
@@ -119,7 +129,7 @@ func find(input model.InputMap) *CallResp {
 
 	return &CallResp{
 		Result:   BuildResult(map[string]string {
-			"Result": strconv.FormatInt(-1, 10),
+			"lastNode-Result": strconv.FormatInt(-1, 10),
 		}),
 		CostTime: time.Since(startTime).Seconds(),
 	}
@@ -130,12 +140,14 @@ func pass(input model.InputMap) *CallResp {
 	startTime := time.Now()
 
 	//将上一个节点输出的Result字段作为参数
-	param := input["lastNode-Result"]
+	lastNodeResult := input["lastNode-Result"]
 	time.Sleep(time.Millisecond * 1000)
+
+	log.Printf("[pass] call pass result:[%v]", lastNodeResult)
 
 	return &CallResp{
 		Result:   BuildResult(map[string]string {
-			"Result": param,
+			"lastNode-Result": lastNodeResult,
 		}),
 		CostTime: time.Since(startTime).Seconds(),
 	}

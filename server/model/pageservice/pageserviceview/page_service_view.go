@@ -116,31 +116,25 @@ func render() {
 根据DAG 生成echarts节点
  */
 func genNodes(dummy *model.DAG) []opts.GraphNode {
-
 	nodes := make([]opts.GraphNode, 0)
-
-	p := dummy
 	var offset float32 = 100
-	for p != nil {
+
+	dagNodes := dummy.TraverseStartAtDummy()
+	for _, n := range dagNodes {
 		node := opts.GraphNode {
-			Name:       p.Name,
+			Name:       n.Name,
 			X:          50,
 			Y:          offset,
-			Value:      values[p.Name],
+			Value:      values[n.Name],
 			Fixed:      false,
 			Symbol:     "roundRect",
 			SymbolSize: 20,
 			ItemStyle:  &opts.ItemStyle{
-				Color: colors[p.Name],
+				Color: colors[n.Name],
 			},
 		}
 		nodes = append(nodes, node)
 		offset += 50
-
-		if  p.Next == nil || len(p.Next) == 0 {
-			break
-		}
-		p = p.Next[0]
 	}
 
 	return nodes
@@ -150,21 +144,19 @@ func genNodes(dummy *model.DAG) []opts.GraphNode {
 根据DAG 生成echarts连线
 */
 func genLinks(dummy *model.DAG) []opts.GraphLink {
-
 	links := make([]opts.GraphLink, 0)
 
-	p := dummy
-	for p != nil {
-		if  p.Next == nil || len(p.Next) == 0 {
-			break
+	dagNodes := dummy.TraverseStartAtDummy()
+	for _, n := range dagNodes {
+		if  n.Next == nil || len(n.Next) == 0 || n.Next[0] == nil {
+			continue
 		}
 		link := opts.GraphLink{
-			Source: p.Name,
-			Target: p.Next[0].Name,
+			Source: n.Name,
+			Target: n.Next[0].Name,
 		}
 		links = append(links, link)
-
-		p = p.Next[0]
 	}
+
 	return links
 }

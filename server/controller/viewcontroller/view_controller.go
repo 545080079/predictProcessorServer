@@ -29,6 +29,6 @@ func HandlerGenerateGraph(c *gin.Context) {
 	key := daoimpl.Push(dummyDAGNode)
 	log.Println("push dag key=", key)
 	//渲染图
-	pageserviceview.GenerateGraphByDAG(dummyDAGNode, conf.CreateModeInit, float32(0.1), "red")
+	pageserviceview.GenerateGraphByDAG(dummyDAGNode, conf.CreateModeInit, float32(-0.1), "red")
 	log.Println("Generate Graph success.")
 }

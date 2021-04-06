@@ -61,19 +61,58 @@ func (d *DAG) LenExceptDummy() int {
 	ptr := d
 	cnt := 0
 	for ptr != nil {
+		cnt++
 
 		//访问节点的next
 		if len(ptr.Next) == 0 {
 			break
 		}
 		ptr = ptr.Next[0]
-		cnt++
 	}
 
-	//dummy节点不计入
 	return cnt - 1
 }
 
+/*
+	遍历图（包含头节点）
+ */
+func (d *DAG) TraverseStartAtDummy() []*DAG {
+	dag := make([]*DAG, 0)
+	if d == nil {
+		return dag
+	}
+	p := d
+	for p != nil {
+		dag = append(dag, p)
+
+		if  p.Next == nil || len(p.Next) == 0 {
+			break
+		}
+		p = p.Next[0]
+	}
+	return dag
+}
+
+/*
+	遍历图（不含头节点）
+*/
+func (d *DAG) Traverse() []*DAG {
+	dag := make([]*DAG, 0)
+	if d == nil || d.Next == nil || len(d.Next) == 0 {
+		return dag
+	}
+
+	p := d.Next[0]
+	for p != nil {
+		dag = append(dag, p)
+
+		if  p.Next == nil || len(p.Next) == 0 {
+			break
+		}
+		p = p.Next[0]
+	}
+	return dag
+}
 
 
 /*
@@ -87,12 +126,13 @@ func (d *DAG) Print() {
 	i := 0
 	for ptr != nil {
 
-		log.Printf("[%d]type:%v, comment:%v, resourceQRN:%v, isEnd:%v", i, ptr.Type, ptr.Comment, ptr.Resource, ptr.IsEnd)
+		log.Printf("[%d]type:%v, comment:%v, name:%v, resourceQRN:%v, isEnd:%v, ", i, ptr.Type, ptr.Comment, ptr.Name, ptr.Resource, ptr.IsEnd)
 
 		//访问节点的next
 		if len(ptr.Next) == 0 {
 			break
 		}
+		log.Printf("next:%v\n", ptr.Next[0])
 		ptr = ptr.Next[0]
 		i++
 	}

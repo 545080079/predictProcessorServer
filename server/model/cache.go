@@ -7,10 +7,7 @@
 
 package model
 
-
-type ResultCache struct {
-	Cache []Cache
-}
+import "fmt"
 
 type Cache struct {
 	Name string	//节点名称
@@ -18,6 +15,24 @@ type Cache struct {
 	RunResult string	//预测模式下执行的结果
 }
 
-func (resultCache ResultCache) Add(c Cache) {
-	resultCache.Cache = append(resultCache.Cache, c)
+var memoryCache []Cache
+
+func init() {
+	memoryCache = make([]Cache, 0)
+}
+
+func CacheAdd(c Cache) {
+	memoryCache = append(memoryCache, c)
+}
+
+func CachePrint() {
+	fmt.Println("-----------memoryCache START-----------")
+	for i, v := range memoryCache {
+		fmt.Printf("[%d] %v\n", i, v)
+	}
+	fmt.Println("-----------memoryCache END-----------")
+}
+
+func FindCacheLast() Cache {
+	return memoryCache[len(memoryCache) - 1]
 }

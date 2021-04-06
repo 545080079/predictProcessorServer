@@ -56,7 +56,8 @@ func main() {
 		}
 		flow := v1.Group("flow")
 		{
-			flow.GET("/process", flowcontroller.HandlerFlowProcess)
+			flow.GET("/Process", flowcontroller.HandlerFlowProcess)
+			flow.GET("/ProcessParallel", flowcontroller.HandlerFlowProcessParallel)
 		}
 	}
 	err := route.Run(conf.PORT)

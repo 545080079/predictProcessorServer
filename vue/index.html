@@ -55,7 +55,9 @@
 "resource": "qrn:x:3",
 "end": true
 }
-}}</span>
+}}
+{"StartAt": "n1","States":{ "n1": { "name": "n1", "resource": "qrn:template:4", "next": "n2" }, "n2":{ "name": "n2", "resource": "qrn:template:5", "end": true } }}
+                    </span>
                     <textarea v-model="code" placeholder="write TCSL code in it." style="width: 800px; height: 400px"></textarea>
                     <button v-on:click="btnSubmit">解析</button>
                     {{dataJson}}

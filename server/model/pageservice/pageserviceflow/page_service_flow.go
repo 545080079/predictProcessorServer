@@ -14,13 +14,25 @@ import (
 	"predictProcessorServer/server/common/parseutils"
 	"predictProcessorServer/server/model"
 	"predictProcessorServer/server/model/dataservice/dataservicefunction"
+	"predictProcessorServer/server/model/pageservice/pageservicepredict"
 	"predictProcessorServer/server/model/pageservice/pageserviceview"
 )
 
 /*
 	调取外部预测模型接口，获取预测值
+	1.将DAG序列化
+	2.调用python server
+	3.反序列化response
  */
 func DescribeDAGPredict(dag *model.DAG, userInput model.InputMap) map[string]string {
+
+	dagStr, err := json.Marshal(dag)
+	if err != nil {
+		log.Fatalf("[DescribeDAGPredict] json Marshal failed.")
+	}
+	resp := pageservicepredict.Call(string(dagStr))
+	log.Printf("[DescribeDAGPredict] call page service predict, resp:[%v]", resp)
+
 	res := make(map[string]string)
 	p := dag.Next[0]
 	for p != nil {

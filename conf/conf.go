@@ -15,3 +15,7 @@ const DataSourceName = "root:123456@tcp({ip:port})/ai_flow?charset=utf8"
 const DummyNodeName = "dummy"
 const CreateModeInit = 1
 const CreateModeModify = 2
+
+//python相关服务
+const PythonMethodName = "c"
+const PythonURL = "http://127.0.0.1:5000"

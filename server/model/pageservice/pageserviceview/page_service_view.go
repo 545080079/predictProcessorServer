@@ -105,10 +105,10 @@ func GenerateGraphByDAG(dummy *model.DAG, createMode int, initValue float32, ini
 //生成echarts图
 func render() {
 	page.AddCharts(graph)
-	file, err := os.Create("./vue/graph.html")
+	file, err := os.Create("./vue/graph.html")//TODO: 由于这个相对路径，只能在根目录下执行./bin/文件
 	err = page.Render(file)
 	if err != nil {
-		log.Fatal("[GenerateGraphByLinkedList] page render file failed: ", err)
+		log.Fatal("[GenerateGraphByDAG] page render file failed: ", err)
 	}
 }
 

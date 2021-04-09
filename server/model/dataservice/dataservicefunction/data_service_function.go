@@ -10,22 +10,15 @@ package dataservicefunction
 import (
 	"encoding/json"
 	"log"
-	"predictProcessorServer/server/common/parseutils"
 	"predictProcessorServer/server/model"
-	"strconv"
-	"time"
 )
 
-/*
-	计算函数入口
-	Result: Marshal字符串
-*/
 type CallResp struct {
 	Result string
 	CostTime float64
 }
 
-func BuildResult(resultMap map[string]string) string {
+func BuildResult(resultMap map[string]interface{}) string {
 	result, err := json.Marshal(resultMap)
 	if err != nil {
 		log.Fatal("[BuildResult] marshal failed, err:", err)
@@ -34,6 +27,10 @@ func BuildResult(resultMap map[string]string) string {
 }
 
 
+/*
+	计算函数入口
+	Result: Marshal字符串
+*/
 func Call(resourceQRN string, input model.InputMap) *CallResp {
 	resp := &CallResp{
 		Result:   "",
@@ -53,102 +50,40 @@ func Call(resourceQRN string, input model.InputMap) *CallResp {
 		functionName = "find"
 	case "qrn:x:3":
 		functionName = "pass"
+	case "qrn:template:1":
+		functionName = "checkToken"
+	case "qrn:template:2":
+		functionName = "checkServiceStatus"
+	case "qrn:template:3":
+		functionName = "checkFile"
+	case "qrn:template:4":
+		functionName = "transferMP3ToTXT"
+	case "qrn:template:5":
+		functionName = "writeResult"
 	default:
 		functionName = "sum"
 	}
 
+	log.Printf("[Call] into %v.", functionName)
 	switch functionName {
 	case "sum":
-		log.Printf("[Call] into sum.")
 		return sum(input)
 	case "find":
-		log.Printf("[Call] into find.")
 		return find(input)
 	case "pass":
-		log.Printf("[Call] into pass.")
 		return pass(input)
+	case "checkToken":
+		return checkToken(input)
+	case "checkServiceStatus":
+		return checkServiceStatus(input)
+	case "checkFile":
+		return checkFile(input)
+	case "transferMP3ToTXT":
+		return transferMP3ToTXT(input)
+	case "writeResult":
+		return writeResult(input)
 	default:
 		return resp
 	}
 }
 
-
-
-/*
-	计算函数实现（模拟耗时操作）
-*/
-
-//求和
-func sum(input model.InputMap) *CallResp {
-
-	arr := []float64{
-		parseutils.StrToFloat64(input["k1"]),
-		parseutils.StrToFloat64(input["k2"]),
-		parseutils.StrToFloat64(input["k3"]),
-	}
-	if input["lastNode-Result"] != "" {
-		arr = append(arr, parseutils.StrToFloat64(input["lastNode-Result"]))
-	}
-	var res float64 = 0
-	startTime := time.Now()
-	for _, v := range arr {
-		time.Sleep(time.Millisecond * 1000)
-		res += v
-	}
-
-	log.Printf("[sum] call sum result:[%v]", res)
-	return &CallResp{
-		Result:   BuildResult(map[string]string {
-			"lastNode-Result": parseutils.Float64ToStr(res),
-		}),
-		CostTime: time.Since(startTime).Seconds(),
-	}
-}
-
-//遍历查找
-func find(input model.InputMap) *CallResp {
-	startTime := time.Now()
-	arr := []float64{
-		parseutils.StrToFloat64(input["k1"]),
-		parseutils.StrToFloat64(input["k2"]),
-		parseutils.StrToFloat64(input["k3"]),
-	}
-	target := parseutils.StrToFloat64(input["target"])
-	for i, v := range arr {
-		time.Sleep(time.Millisecond * 100)
-		if int64(v) == int64(target) {
-			log.Printf("[find] call find result:index[%v]", i)
-			return &CallResp{
-				Result:   BuildResult(map[string]string {
-					"lastNode-Result": strconv.FormatInt(int64(i), 10),
-				}),
-				CostTime: time.Since(startTime).Seconds(),
-			}
-		}
-	}
-
-	return &CallResp{
-		Result:   BuildResult(map[string]string {
-			"lastNode-Result": strconv.FormatInt(-1, 10),
-		}),
-		CostTime: time.Since(startTime).Seconds(),
-	}
-}
-
-//传递
-func pass(input model.InputMap) *CallResp {
-	startTime := time.Now()
-
-	//将上一个节点输出的Result字段作为参数
-	lastNodeResult := input["lastNode-Result"]
-	time.Sleep(time.Millisecond * 1000)
-
-	log.Printf("[pass] call pass result:[%v]", lastNodeResult)
-
-	return &CallResp{
-		Result:   BuildResult(map[string]string {
-			"lastNode-Result": lastNodeResult,
-		}),
-		CostTime: time.Since(startTime).Seconds(),
-	}
-}

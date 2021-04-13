@@ -18,4 +18,4 @@ const CreateModeModify = 2
 
 //python相关服务
 const PythonMethodName = "c"
-const PythonURL = "http://127.0.0.1:5000"
+const PythonURL = "http://127.0.0.1:5000/v1/predict"

@@ -17,8 +17,8 @@ import (
 
 func Call(dagStr string) *http.Response {
 	data := url.Values{
-		"a": {"test"},
-		"b": {"param"},
+		"send1": {"test"},
+		"send2": {"param"},
 	}
 
 	resp, err := http.Post(conf.PythonURL, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))

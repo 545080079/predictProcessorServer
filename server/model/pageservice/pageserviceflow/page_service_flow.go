@@ -9,6 +9,7 @@ package pageserviceflow
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"predictProcessorServer/conf"
 	"predictProcessorServer/server/common/parseutils"
@@ -31,7 +32,12 @@ func DescribeDAGPredict(dag *model.DAG, userInput model.InputMap) map[string]str
 		log.Fatalf("[DescribeDAGPredict] json Marshal failed.")
 	}
 	resp := pageservicepredict.Call(string(dagStr))
-	log.Printf("[DescribeDAGPredict] call page service predict, resp:[%v]", resp)
+	ret, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("[DescribeDAGPredict] ioutil read err :[%v].", err)
+	}
+
+	log.Printf("[DescribeDAGPredict] call page service predict, response code:[%v], body:[%v]", resp.StatusCode, string(ret))
 
 	res := make(map[string]string)
 	p := dag.Next[0]

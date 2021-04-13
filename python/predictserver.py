@@ -1,10 +1,10 @@
 import socket
 from multiprocessing import Process
 
-from flask import Flask
+from flask import Flask, request
 app = Flask(__name__)
 
-@app.route('/v1/predict')
+@app.route('/v1/predict', methods = ['POST', 'GET'])
 def handlerPredict():
     res = """
     {
@@ -12,6 +12,7 @@ def handlerPredict():
         "b": "138888888"
     }
     """
+    res = request.form['send1'] + request.form['send2']
     return res
 if __name__ == "__main__":
     """

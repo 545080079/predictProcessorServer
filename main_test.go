@@ -17,6 +17,13 @@ import (
 func TestX(t *testing.T) {
 }
 
+func TestFF(t *testing.T) {
+	var str1 string = "%saa"
+	var str2 = "123"
+	str3 := "321"
+	fmt.Printf(str1, str2, str3)
+}
+
 func TestWaitGroup(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(3)

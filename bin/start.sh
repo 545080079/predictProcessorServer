@@ -1,10 +1,10 @@
 #!/usr/bin bash
 
 export FLASK_APP=predictserver.py
-rm ./predict_execute_server
-cd ../
+export workdir=/root/workdir/predictProcessorServer
+cd $workdir
 make
 ./bin/predict_execute_server &
-cd ./python
+cd $workdir/python
 pwd
 flask run --host=0.0.0.0 &

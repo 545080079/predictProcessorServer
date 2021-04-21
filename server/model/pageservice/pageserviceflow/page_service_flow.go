@@ -17,6 +17,7 @@ import (
 	"predictProcessorServer/server/model/dataservice/dataservicefunction"
 	"predictProcessorServer/server/model/pageservice/pageservicepredict"
 	"predictProcessorServer/server/model/pageservice/pageserviceview"
+	"strconv"
 )
 
 /*
@@ -25,7 +26,7 @@ import (
 	2.调用python server
 	3.反序列化response
  */
-func DescribeDAGPredict(dag *model.DAG, userInput model.InputMap) map[string]string {
+func DescribeDAGPredict(dag *model.DAG, userInput model.InputMap) map[string]int {
 
 	dagStr, err := json.Marshal(dag)
 	if err != nil {
@@ -38,12 +39,15 @@ func DescribeDAGPredict(dag *model.DAG, userInput model.InputMap) map[string]str
 	}
 
 	log.Printf("[DescribeDAGPredict] call page service predict, response code:[%v], body:[%v]", resp.StatusCode, string(ret))
-
-	res := make(map[string]string)
+	var retMap map[string]interface{}
+	err = json.Unmarshal(ret, &retMap)
+	if err != nil {
+		log.Fatalf("[DescribeDAGPredict]json unmarshal ret :[%v].", err)
+	}
+	res := make(map[string]int)
 	p := dag.Next[0]
 	for p != nil {
-		//预测值从模型取得，这里暂时写死
-		res[p.Name] = "99"
+		res[p.Name] = int(retMap[p.Name].(float64))
 		if p.Next == nil || p.Next[0] == nil {
 			break
 		}
@@ -78,7 +82,7 @@ func ProcessParallel(dag *model.DAG, userInput model.InputMap) (model.InputMap, 
 			continue
 		}
 		//为了方便演示，输出仅限制为一个数字
-		userInput["lastNode-Result"] = predictMap[lastName]
+		userInput["lastNode-Result"] = strconv.Itoa(predictMap[lastName])
 		//此时该节点具备执行条件
 
 		log.Printf("[ProcessParallel] p.Name:[%v], p.Resource:[%v]", p.Name, p.Resource)

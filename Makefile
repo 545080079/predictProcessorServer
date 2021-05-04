@@ -5,7 +5,7 @@ $(shell GEN_PROTO_LIB ../proto/asw )
 all: ${target}
 
 ${target}: clean
-	go build -o ./bin/${target} ./server/main.go
+	go build -o ./bin/${target} ./main.go
 
 clean:
 	rm -f ./bin/${target}

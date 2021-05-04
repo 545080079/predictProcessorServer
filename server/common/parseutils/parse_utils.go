@@ -1,6 +1,6 @@
 /**
  * @Author: yutaoluo@tencent.com
- * @Description:
+ * @Description: 解析器相关utils
  * @File: parse_utils.go
  * @Date: 2021/3/11 11:32
  */
@@ -9,6 +9,7 @@ package parseutils
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"log"
 	"predictProcessorServer/server/model"
 	"strconv"
@@ -58,3 +59,28 @@ func ParseStringToInputMap(input string) map[string]string {
 	}
 	return resMap
 }
+
+/*
+	TODO
+	检查状态机Definition信息
+	Return 	True：通过
+			False：不通过
+*/
+func CheckStateInfo(stateArray []string) bool {
+	return true
+}
+
+/*
+	TODO
+	检查入参是否符合语法
+*/
+func CheckInputParams(c *gin.Context) bool {
+	if c.Query("input") == "" {
+		return false
+	}
+	if c.Query("qrn") == "" {
+		return false
+	}
+	return true
+}
+

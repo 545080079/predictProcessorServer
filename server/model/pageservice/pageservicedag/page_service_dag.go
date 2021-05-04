@@ -11,7 +11,6 @@ import (
 	"log"
 	"predictProcessorServer/conf"
 	"predictProcessorServer/server/common/parseutils"
-	"predictProcessorServer/server/common/stateutils"
 	"predictProcessorServer/server/model"
 )
 
@@ -40,7 +39,7 @@ func ParseDefinition(definition string) (*model.DAG, error) {
 	log.Printf("[HandlerParseDefinition]状态机节点：%v", nameArray)
 
 	//检查状态机列表
-	ret := stateutils.CheckStateInfo(nameArray)
+	ret := parseutils.CheckStateInfo(nameArray)
 	if !ret {
 		log.Fatalln("[HandlerParseDefinition]状态机列表名称重复")
 	}

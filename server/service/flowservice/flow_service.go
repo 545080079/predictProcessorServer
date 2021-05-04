@@ -1,6 +1,6 @@
 /**
  * @Author: yutaoluo@tencent.com
- * @Description:
+ * @Description:GRPC service类
  * @File: flow_service
  * @Date: 2021/3/12 10:17
  */

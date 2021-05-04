@@ -1,55 +1,67 @@
+import json
 import socket
 from multiprocessing import Process
 
-from flask import Flask
+from flask import Flask, request
 app = Flask(__name__)
 
-@app.route('/v1/predict')
+@app.route('/v1/predict', methods = ['POST', 'GET'])
 def handlerPredict():
-    res = """
+    """
+    res likes:
     {
-        "a": "test data!",
-        "b": "138888888"
+        "Name": "n1",
+        "Next": [{
+            "Name": "n2",
+            "Next": [None]
+        }]
     }
     """
+    
+    #读取模型
+    inputOutputMap = {}
+    with open('InputOutputMap') as f:
+    for line in f.readlines():
+        l = line.split(' ')
+        if l[1][:-1] == '':#如果没有换行，代表是最后一个
+            inputOutputMap[int(l[0])] = int(l[1])
+        else:  #除最后一行都会有\n,需要去掉
+            inputOutputMap[int(l[0])] = int(l[1][:-1])
+            
+    nameCountMap = {}
+    with open('NameCountMap') as f:
+        for line in f.readlines():
+            l = line.split(' ')
+            if l[1][:-1] == '':#如果没有换行，代表是最后一个
+                nameCountMap[l[0]] = int(l[1])
+            else:  #除最后一行都会有\n,需要去掉
+                nameCountMap[l[0]] = int(l[1][:-1])
+    
+    print(inputOutputMap)
+    print(nameCountMap)
+    
+    data = json.loads(request.form['dag'])
+    #根据NodeName-Output Map统计模型查找预测值
+    res = {}
+    while data != None:
+        res[data["Name"]] = nameCountMap.get(data["Name"], -1)    #默认-1
+        data = data["Next"][0]
+    
+    #根据Input-Output Map统计模型查找预测值
+    while data != None:
+        #只对NodeName-Output未给出预测的节点使用该方法
+        if res[data["Name"]] == -1:
+            res[data["Name"]] = inputOutputMap.get(data["Parameters"][0], -1) #默认-1
+    
+    
+            
+        
     return res
+
+
 if __name__ == "__main__":
+    
     """
     服务开始运行
     """
     print('predict server start running at ::5000.')
-
-
-
-# def handler_client(client_socket):
-#     """处理客户端请求"""
-#     # 获取客户端请求数据
-#     request_data = client_socket.recv(1024)
-#     print("request data:", request_data)
-
-#     # 构造响应数据
-#     response_start_line = "HTTP/1.1 200 OK\r\n"
-#     response_headers = "Server: My server\r\n"
-#     response_body = "{\"Response\": \"545080079\"}"
-#     response = response_start_line + response_headers + "\r\n" + response_body
-#     print("response data:", response)
-
-#     # 向客户端返回响应数据
-#     client_socket.send(bytes(response, "utf-8"))
-
-#     # 关闭客户端连接
-#     client_socket.close()
-    
-# if __name__ == "__main__":
-#     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#     server_socket.bind(("", 8000))
-#     server_socket.listen(120)
-
-#     while True:
-#         client_socket, client_address = server_socket.accept()
-#         print("用户[%s:%s]请求本服务..." % client_address)
-#         handle_client_process = Process(target=handler_client, args=(client_socket,))
-#         handle_client_process.start()
-#         client_socket.close()
-# # 在浏览器输入 http://localhost:8000/
-# # 会出现 hello itcast

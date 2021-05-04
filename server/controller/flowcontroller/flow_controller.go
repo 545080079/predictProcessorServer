@@ -12,14 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	pb "predictProcessorServer/pb3/asw/AswSvr"
-	"predictProcessorServer/server/common/flowutils"
 	"predictProcessorServer/server/common/parseutils"
 	"predictProcessorServer/server/dao/daoimpl"
 	"predictProcessorServer/server/model/pageservice/pageserviceflow"
 )
 
 func HandlerFlowProcess(c *gin.Context) {
-	if !flowutils.CheckInputParams(c) {
+	if !parseutils.CheckInputParams(c) {
 		log.Fatal("[HandlerFlowProcess] Param is nil.")
 	}
 
@@ -35,7 +34,8 @@ func HandlerFlowProcess(c *gin.Context) {
 	userInputMap := parseutils.ParseStringToInputMap(input)
 
 	//传入工作流入参，调用普通顺序执行器执行DAGraph flow
-	//错误暂时忽略TODO
+	//错误暂时忽略
+	//TODO
 	output, _ := pageserviceflow.ProcessNormal(dag, userInputMap)
 	ret := map[string]interface{} {
 		"Result":   output["lastNode-Result"],
@@ -45,7 +45,7 @@ func HandlerFlowProcess(c *gin.Context) {
 }
 
 func HandlerFlowProcessParallel(c *gin.Context) {
-	if !flowutils.CheckInputParams(c) {
+	if !parseutils.CheckInputParams(c) {
 		log.Fatal("[HandlerFlowProcess] Param is nil.")
 	}
 
